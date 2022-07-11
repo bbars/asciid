@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TTY GUI - Random Path</title>
+<style>
+pre {
+	display: inline-block;
+	background: black;
+	color: yellow;
+}
+</style>
+</head>
+<body>
+<pre id="pre"></pre>
+<script type="module">
+
+import * as ascii from '../index.js';
+
+const canvas = new ascii.Canvas(60, 29);
+canvas.addEventListener('change', (event) => {
+	pre.textContent = canvas;
+});
+
+canvas.mov(canvas.width / 2, canvas.height / 2);
+
+function weightedRand(a, weightKey) {
+	weightKey = weightKey || 'weight';
+	let sum = 0;
+	for (let i = 0; i < a.length; i++) {
+		if (isNaN(a[i][weightKey]) || a[i][weightKey] < 0) {
+			console.warn(a[i]);
+			throw new Error(`All weights must be a positive numbers ([${weightKey}] = ${a[i][weightKey]})`);
+		}
+		sum += a[i][weightKey];
+	}
+	let rnd = Math.random() * sum;
+	let cnt = 0;
+	for (let i = 0; i < a.length; i++) {
+		if (cnt >= rnd) {
+			return a[i-1];
+		}
+		cnt += a[i][weightKey];
+	}
+	return a[a.length - 1];
+}
+
+let counter = 0;
+setInterval(() => {
+	// change direction:
+	const dirs = [
+		{ value: ascii.Dir.RIGHT, weight: 3, old: canvas.height / canvas.width },
+		{ value: ascii.Dir.DOWN,  weight: 1, old: canvas.width / canvas.height },
+		{ value: ascii.Dir.LEFT,  weight: 3, old: canvas.height / canvas.width },
+		{ value: ascii.Dir.UP,    weight: 1, old: canvas.width / canvas.height },
+	];
+	const dir = weightedRand(dirs).value || canvas.dir;
+	canvas.setDir(dir);
+	
+	// write random line type:
+	const lines = [
+		ascii.gen.LightLine,
+		ascii.gen.HeavyLine,
+		ascii.gen.DoubleLine,
+	];
+	const line = lines[Math.round(Math.random() * lines.length) % lines.length];
+	canvas.write(new line(1));
+	// canvas.write(String(++counter));
+	
+	// edge-jump:
+	if (canvas.x < 0) { canvas.x = canvas.width - 1; }
+	if (canvas.y < 0) { canvas.y = canvas.height - 1; }
+	if (canvas.x >= canvas.width) { canvas.x = 0; }
+	if (canvas.y >= canvas.height) { canvas.y = 0; }
+}, 10);
+
+</script>
+</body>
+</html>

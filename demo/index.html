@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TTY GUI</title>
+<style>
+pre {
+	display: inline-block;
+	background: black;
+	color: yellow;
+}
+pre > * {
+	background: inherit;
+}
+.cl-red {
+	color: red;
+}
+.bg-grey {
+	background: grey;
+}
+.invert {
+	filter: invert(1);
+}
+</style>
+</head>
+<body>
+<pre id="pre"></pre>
+<script type="module">
+
+import * as ascii from '../index.js';
+
+const canvas = new ascii.Canvas(20, 30);
+canvas.addEventListener('change', (event) => {
+	requestAnimationFrame.once(() => {
+		pre.textContent = '';
+		pre.appendChild(canvas.toNodes());
+	});
+});
+requestAnimationFrame.once = function (fn) {
+	if (this.once.requested) {
+		return false;
+	}
+	this.once.requested = fn;
+	requestAnimationFrame((...args) => {
+		this.once.requested = false;
+		fn(...args);
+	});
+	return true;
+};
+
+canvas.mov(1, 10).write('0').write(new ascii.gen.LightLine(0)).off(1);
+canvas.mov(1, 11).write('1').write(new ascii.gen.LightLine(1)).off(1);
+canvas.mov(1, 12).write('2').write(new ascii.gen.LightLine(2)).off(1);
+canvas.mov(1, 13).write('3').write(new ascii.gen.LightLine(3)).off(1);
+canvas.mov(1, 14).write('4').write(new ascii.gen.LightLine(4)).off(1);
+canvas.mov(10, 10).write('0').write(new ascii.gen.HeavyLine(0)).off(1);
+canvas.mov(10, 11).write('1').write(new ascii.gen.HeavyLine(1)).off(1);
+canvas.mov(10, 12).write('2').write(new ascii.gen.HeavyLine(2)).off(1);
+canvas.mov(10, 13).write('3').write(new ascii.gen.HeavyLine(3)).off(1);
+canvas.mov(10, 14).write('4').write(new ascii.gen.HeavyLine(4)).off(1);
+canvas.mov(1, 15).write('0').write(new ascii.gen.DoubleLine(0)).off(1);
+canvas.mov(1, 16).write('1').write(new ascii.gen.DoubleLine(1)).off(1);
+canvas.mov(1, 17).write('2').write(new ascii.gen.DoubleLine(2)).off(1);
+canvas.mov(1, 18).write('3').write(new ascii.gen.DoubleLine(3)).off(1);
+canvas.mov(1, 19).write('4').write(new ascii.gen.DoubleLine(4)).off(1);
+
+canvas.mov(3, 21).setDir(ascii.Dir.RIGHT).write('Multiline\ntext');
+canvas.mov(15, 21).setDir(ascii.Dir.DOWN).write('Multiline\ntext');
+canvas.mov(11, 25).setDir(ascii.Dir.LEFT).write('Multiline\ntext');
+canvas.mov(3, 28).setDir(ascii.Dir.RIGHT).write('Text\rwith\rreturn\rchar');
+
+const clRed = new ascii.mid.Span('cl-red');
+const invert = new ascii.mid.Span('invert');
+
+canvas.mov(0, 0).write(new ascii.gen.LightRect(20, 10, true));
+canvas.mov(6, 3).write(new ascii.gen.DoubleRect(7, 3).pipe(clRed));
+canvas.mov(5, 2).write(new ascii.gen.HeavyRect(9, 5));
+
+canvas.mov(7, 4).setDir(ascii.Dir.RIGHT).write('Hello');
+canvas.mov(7, 7).setDir(ascii.Dir.LEFT).write('Hello');
+canvas.off(1, 1).setDir(ascii.Dir.RIGHT).write(invert.feed('Aloha').feed('!'));
+canvas.setDir(ascii.Dir.RIGHT);
+
+canvas.setDir(ascii.Dir.DOWN);
+canvas.mov(11, 5).write(new ascii.gen.LightLine(4).pipe(new ascii.mid.BeautyLines()));
+canvas.setDir(ascii.Dir.RIGHT);
+
+/*
+pl
+	.mov(0, 0)
+	.rectRounded(20, 10)
+	.mov(2, 2)
+	.right(0)
+;
+pd
+	.mov(6, 3)
+	.rect()
+;
+pl
+	.mov(0, 4)
+	.right(6)
+	.mov(11, 5)
+	.down(4)
+;
+*/
+</script>
+</body>
+</html>
