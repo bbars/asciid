@@ -1,7 +1,7 @@
-import MidBase from './MidBase.js';
+import ModBase from './ModBase.js';
 
-export default class MidBeautyLines extends MidBase {
-	*pass(src, canvas, params) {
+export default class ModBeautyLines extends ModBase {
+	*modify(src, canvas, params) {
 		let prev;
 		for (const char of src) {
 			prev = canvas.get(canvas.x, canvas.y);

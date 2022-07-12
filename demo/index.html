@@ -70,8 +70,8 @@ canvas.mov(15, 21).setDir(ascii.Dir.DOWN).write('Multiline\ntext');
 canvas.mov(11, 25).setDir(ascii.Dir.LEFT).write('Multiline\ntext');
 canvas.mov(3, 28).setDir(ascii.Dir.RIGHT).write('Text\rwith\rreturn\rchar');
 
-const clRed = new ascii.mid.Span('cl-red');
-const invert = new ascii.mid.Span('invert');
+const clRed = new ascii.mod.Span('cl-red');
+const invert = new ascii.mod.Span('invert');
 
 canvas.mov(0, 0).write(new ascii.gen.LightRect(20, 10, true));
 canvas.mov(6, 3).write(new ascii.gen.DoubleRect(7, 3).pipe(clRed));
@@ -83,7 +83,7 @@ canvas.off(1, 1).setDir(ascii.Dir.RIGHT).write(invert.feed('Aloha').feed('!'));
 canvas.setDir(ascii.Dir.RIGHT);
 
 canvas.setDir(ascii.Dir.DOWN);
-canvas.mov(11, 5).write(new ascii.gen.LightLine(4).pipe(new ascii.mid.BeautyLines()));
+canvas.mov(11, 5).write(new ascii.gen.LightLine(4).pipe(new ascii.mod.BeautyLines()));
 canvas.setDir(ascii.Dir.RIGHT);
 
 /*

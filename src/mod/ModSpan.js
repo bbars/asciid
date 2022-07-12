@@ -1,6 +1,6 @@
-import MidBase from './MidBase.js';
+import ModBase from './ModBase.js';
 
-export default class MidSpan extends MidBase {
+export default class ModSpan extends ModBase {
 	className;
 	
 	constructor(className) {
@@ -8,7 +8,7 @@ export default class MidSpan extends MidBase {
 		this.className = className;
 	}
 	
-	*pass(src, canvas, params) {
+	*modify(src, canvas, params) {
 		for (const char of src) {
 			if (typeof char === 'object' && false === char instanceof String) {
 				yield char;

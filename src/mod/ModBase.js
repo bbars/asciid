@@ -1,7 +1,7 @@
 import GenBase from '../gen/GenBase.js';
 import GenText from '../gen/GenText.js';
 
-export default class MidBase extends GenBase {
+export default class ModBase extends GenBase {
 	srcs = [];
 	
 	feed(src) {
@@ -13,11 +13,11 @@ export default class MidBase extends GenBase {
 	*generate(canvas, params) {
 		while (this.srcs.length > 0) {
 			const src = this.srcs.shift();
-			yield* this.pass(src.generate(canvas, params), canvas, params);
+			yield* this.modify(src.generate(canvas, params), canvas, params);
 		}
 	}
 	
-	*pass(src, canvas, params) {
+	*modify(src, canvas, params) {
 		throw new Error(`Must be implemented in descendant`);
 	}
 }
