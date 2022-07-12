@@ -10,7 +10,6 @@ export default class Canvas extends EventTarget {
 	x = 0;
 	y = 0;
 	dir = Dir.RIGHT;
-	beautyUpdates = true;
 	
 	constructor(width, height, dir) {
 		super();
@@ -155,7 +154,7 @@ export default class Canvas extends EventTarget {
 		throw new Error("TODO");
 	}
 	
-	_set(x, y, char, skipBeautyUpdates) {
+	_set(x, y, char) {
 		x |= 0;
 		y |= 0;
 		if (this.get(x, y) == null) {
@@ -166,112 +165,10 @@ export default class Canvas extends EventTarget {
 		this.dispatchEvent(new CustomEvent('change', {
 			detail: { x, y, prev, char },
 		}));
-		// if (!skipBeautyUpdates && this.beautyUpdates) {
-			// this._beautyUpdate(x, y, prev, char);
-		// }
 		return 1;
 	}
 	
 	set(x, y, char) {
 		return this._set(x, y, char, false);
-	}
-	
-	lineDescriptions = {
-		'╴': 'l1',
-		'╶': 'r1',
-		'╵': 'u1',
-		'╷': 'd1',
-		'│': 'u1d1',
-		'┤': 'u1d1l1',
-		'╡': 'u1d1l2',
-		'╢': 'u2d2l1',
-		'╖': 'd2l1',
-		'╕': 'd1l2',
-		'╣': 'u2d2l2',
-		'║': 'u2d2',
-		'╗': 'd2l2',
-		'╝': 'u2l2',
-		'╜': 'u2l1',
-		'╛': 'u1l2',
-		'┴': 'u1l1r1',
-		'┬': 'd1l1r1',
-		'├': 'u1d1r1',
-		'─': 'l1r1',
-		'┼': 'u1d1l1r1',
-		'╞': 'u1r2',
-		'╟': 'u2d2r1',
-		'╚': 'u2r2',
-		'╔': 'd2r2',
-		'╩': 'u2l2r2',
-		'╦': 'd2l2r2',
-		'╠': 'u2d2r2',
-		'═': 'l2r2',
-		'╬': 'u2d2l2r2',
-		'╧': 'u1l2r2',
-		'╨': 'u2l1r1',
-		'╤': 'd1l2r2',
-		'╥': 'd2l1r1',
-		'╙': 'u2r1',
-		'╓': 'd2r1',
-		'╫': 'u2d2l1r1',
-		'╪': 'u1d1l2r2',
-		'╘': 'u1r2',
-		'╒': 'd1r2',
-		// rounded first:
-		'╭': 'd1r1',
-		'╮': 'd1l1',
-		'╯': 'u1l1',
-		'╰': 'u1r1',
-		// then angled:
-		'┌': 'd1r1',
-		'┐': 'd1l1',
-		'┘': 'u1l1',
-		'└': 'u1r1',
-		
-		'┏': 'dhrh',
-		'┓': 'dhlh',
-		'┗': 'uhrh',
-		'┛': 'uhlh',
-		'╸': 'lh',
-		'╹': 'uh',
-		'╺': 'rh',
-		'╻': 'dh',
-	};
-	_beautyUpdate(x, y, prev, char) {
-		lines: {
-			const prevDesc = this.lineDescriptions[prev];
-			const charDesc = this.lineDescriptions[char];
-			if (!prevDesc || !charDesc) {
-				break lines;
-			}
-			let mixDesc = { u: 0, d: 0, l: 0, r: 0 };
-			for (let i = 0; i < prevDesc.length; i += 2) {
-				mixDesc[prevDesc[i]] = prevDesc[i + 1];
-			}
-			for (let i = 0; i < charDesc.length; i += 2) {
-				mixDesc[charDesc[i]] = charDesc[i + 1];
-			}
-			mixDesc = ''
-				+ (!mixDesc.u ? '' : 'u' + mixDesc.u)
-				+ (!mixDesc.d ? '' : 'd' + mixDesc.d)
-				+ (!mixDesc.l ? '' : 'l' + mixDesc.l)
-				+ (!mixDesc.r ? '' : 'r' + mixDesc.r)
-			;
-			if (!mixDesc || mixDesc === charDesc) {
-				break lines;
-			}
-			break lines;
-			if (!this.lineDescriptions.flip) {
-				this.lineDescriptions.flip = {};
-				for (const k in this.lineDescriptions) {
-					this.lineDescriptions.flip[this.lineDescriptions[k]] = k;
-				}
-			}
-			const replace = this.lineDescriptions.flip[mixDesc];
-			if (!replace || replace === char) {
-				break lines;
-			}
-			this._set(x, y, replace, true);
-		}
 	}
 }
