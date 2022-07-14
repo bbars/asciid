@@ -143,15 +143,44 @@ export default class Canvas extends EventTarget {
 	copy(srcX, srcY, width, height) {
 		srcX = (srcX | 0) || 0;
 		srcY = (srcY | 0) || 0;
-		width = Math.max(0, width | 0) || this.width;
-		height = Math.max(0, height | 0) || this.height;
+		width = Math.max(0, width | 0) || (this.width - srcX);
+		height = Math.max(0, height | 0) || (this.height - srcY);
 		const res = new this.constructor(width, height);
 		res.draw(this, 0, 0, srcX, srcY, width, height);
 		return res;
 	}
 	
 	draw(src, dstX, dstY, srcX, srcY, srcWidth, srcHeight) {
-		throw new Error("TODO");
+		const dst = this;
+		dstX = (dstX | 0) || 0;
+		dstY = (dstY | 0) || 0;
+		srcX = (srcX | 0) || 0;
+		srcY = (srcY | 0) || 0;
+		srcWidth = Math.max(0, srcWidth | 0);
+		srcHeight = Math.max(0, srcHeight | 0);
+		srcWidth = Math.min(srcWidth || src.width, src.width - srcX, dst.width - dstX);
+		srcHeight = Math.min(srcHeight || src.height, src.height - srcY, dst.height - dstY);
+		/*
+		// TODO: optimize:
+		for (let y = Math.max(0, -srcY); y < srcHeight; y++) {
+			const y0 = srcY + y;
+			const y1 = dstY + y;
+			for (let x = Math.max(0, -srcX); x < srcWidth; x++) {
+				const x0 = srcX + x;
+				const x1 = dstX + x;
+				dst.rows[y1][x1] = src.rows[y0][x0];
+			}
+		}
+		*/
+		for (let y = Math.max(0, -srcY); y < srcHeight; y++) {
+			const y0 = srcY + y;
+			const y1 = dstY + y;
+			const x0 = srcX + Math.max(0, -srcX);
+			const x1 = dstX + Math.max(0, -srcX);
+			const slice = src.rows[y0].slice(x0, x0 + srcWidth); // TODO: clone values
+			dst.rows[y1].splice(x1, x1 + srcWidth, ...slice);
+		}
+		return dst;
 	}
 	
 	_set(x, y, char) {
