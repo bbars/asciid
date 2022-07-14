@@ -2,6 +2,17 @@ import Dir from './Dir.js';
 import GenBase from './gen/GenBase.js';
 import GenText from './gen/GenText.js';
 import CtlBase from './ctl/CtlBase.js';
+const _CustomEvent = typeof CustomEvent !== 'undefined'
+	? CustomEvent
+	: typeof Event !== 'undefined'
+		? Event
+		: class CustomEventDummy {
+			constructor(type, ext) {
+				Object.assign(this, ext);
+				this.type = type;
+			}
+		}
+;
 
 export default class Canvas extends EventTarget {
 	rows = [];
@@ -191,7 +202,7 @@ export default class Canvas extends EventTarget {
 		}
 		const prev = this.get(x, y);
 		this.rows[y][x] = char;
-		this.dispatchEvent(new CustomEvent('change', {
+		this.dispatchEvent(new _CustomEvent('change', {
 			detail: { x, y, prev, char },
 		}));
 		return 1;
